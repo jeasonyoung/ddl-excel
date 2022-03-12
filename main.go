@@ -49,7 +49,7 @@ func main() {
 	allyes.Init()
 	command := gcmd.GetArg(1)
 	// help information
-	if gcmd.ContainsOpt("h") && command != "" {
+	if command == "" {
 		help(command)
 		return
 	}

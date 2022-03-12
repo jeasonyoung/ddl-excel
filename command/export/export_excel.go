@@ -37,15 +37,18 @@ func (dc *daoConn) getTables() (map[string]string, error) {
 }
 
 func (dc *daoConn) createExcel() error {
+	mlog.Print("开始获取表信息...")
 	//获取表集合
 	tables, err := dc.getTables()
 	if err != nil {
 		mlog.Fatal(err)
 	}
 	//创建Excel对象
+	mlog.Print("开始创建Excel")
 	f := excelize.NewFile()
 	//sheet
 	for name, comment := range tables {
+		mlog.Printf("开始生成表数据:[%s]%s...", name, comment)
 		if comment != "" {
 			f.NewSheet(comment)
 			dc.createSheet(f, comment, name)
@@ -56,6 +59,7 @@ func (dc *daoConn) createExcel() error {
 	}
 	//删除Sheet1
 	f.DeleteSheet("Sheet1")
+	mlog.Print("开始保存Excel.")
 	//保存Excel
 	return f.SaveAs(fmt.Sprintf("%s.xlsx", dc.name))
 }
