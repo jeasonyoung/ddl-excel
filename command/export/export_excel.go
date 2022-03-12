@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gogf/gf/frame/g"
 	"github.com/xuri/excelize/v2"
+	"sort"
 	"strings"
 )
 
@@ -46,16 +47,24 @@ func (dc *daoConn) createExcel() error {
 	//创建Excel对象
 	mlog.Print("开始创建Excel")
 	f := excelize.NewFile()
-	//sheet
-	for name, comment := range tables {
-		mlog.Printf("开始生成表数据:[%s]%s...", name, comment)
-		if comment != "" {
-			f.NewSheet(comment)
-			dc.createSheet(f, comment, name)
-			continue
+	//表集合
+	names := g.ArrayStr{}
+	for key := range tables {
+		if key != "" {
+			names = append(names, key)
 		}
-		f.NewSheet(name)
-		dc.createSheet(f, name, name)
+	}
+	//排序
+	sort.Strings(names)
+	for _, name := range names {
+		comment := tables[name]
+		mlog.Printf("开始生成表数据:[%s]%s...", name, comment)
+		sheet := name
+		if comment != "" {
+			sheet = fmt.Sprintf("%s(%s)", comment, name)
+		}
+		f.NewSheet(sheet)
+		dc.createSheet(f, sheet, name)
 	}
 	//删除Sheet1
 	f.DeleteSheet("Sheet1")
